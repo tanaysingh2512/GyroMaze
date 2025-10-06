@@ -200,15 +200,3 @@ When running on Raspberry Pi:
    ```bash
    python3 main.py
    ```
-
-## Credits
-
-Created as a modular, educational maze game designed for easy hardware integration.
-
-## License
-
-Free to use and modify. Have fun! 🎮
-
----
-
-**Enjoy the game!** Try to beat all 10 levels and get the highest score! 🏆
