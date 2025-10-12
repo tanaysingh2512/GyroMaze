@@ -9,7 +9,8 @@ from player import Player
 from renderer import Renderer
 from input_handler import KeyboardInputHandler
 from profile_manager import ProfileManager
-from levels import get_level, ALL_LEVELS
+from maze_generator import create_randomized_level
+from levels import ALL_LEVELS
 from config import INITIAL_LIVES, TIME_BONUS_MULTIPLIER
 
 class GameState(Enum):
@@ -210,7 +211,7 @@ class GameManager:
     
     def _load_level(self, level_number):
         """Load a specific level."""
-        level_data = get_level(level_number)
+        level_data = create_randomized_level(level_number)
         if not level_data:
             self.state = GameState.VICTORY
             return
