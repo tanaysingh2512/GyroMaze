@@ -3,7 +3,7 @@ Player class for the maze game.
 """
 
 import pygame
-from config import COLOR_PLAYER, CELL_SIZE, PLAYER_SPEED
+from config import CELL_SIZE, PLAYER_SPEED
 
 class Player:
     """Represents the player in the maze."""
