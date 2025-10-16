@@ -1,0 +1,8 @@
+﻿__pycache__/
+*.pyc
+*.pyo
+*.log
+.DS_Store
+.env
+profiles.json
+high_scores.json

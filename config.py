@@ -25,3 +25,19 @@ TILE_COLLECTIBLE = 'C'
 # Files
 SCORES_FILE = 'high_scores.json'
 PROFILES_FILE = 'profiles.json'
+
+# === Input selection & Sense HAT tuning ===
+# Choose "sensehat" for tilt controls, "keyboard" to revert.
+INPUT_METHOD = "sensehat"
+
+# Tilt deadzone (degrees): ignore tiny hand shakes
+GYRO_DEADZONE_DEG = 8.0
+
+# EMA smoothing factor (0..1): higher = snappier, lower = smoother
+GYRO_SMOOTH = 0.25
+
+# Shake gesture -> acts like ENTER (confirm/next)
+SHAKE_G_THRESHOLD = 1.7     # peak |accel| in g to count as a shake
+SHAKE_DEBOUNCE_MS = 800     # min ms between shake-confirms
+
+
