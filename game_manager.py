@@ -21,6 +21,7 @@ from config import (
     INITIAL_LIVES,
     TIME_BONUS_MULTIPLIER,
 )
+import color_manager
 
 class GameState(Enum):
     """Game states."""
@@ -33,6 +34,7 @@ class GameState(Enum):
     GAME_OVER = 7
     VICTORY = 8
     HIGH_SCORES = 9
+    OPTIONS = 10
 
 
 class GameManager:
@@ -68,10 +70,21 @@ class GameManager:
         self.time_limit = None
 
         # Menu
-        self.menu_options = ["New Game", "High Scores", "Quit"]
+        self.menu_options = ["New Game", "High Scores", "Options", "Quit"]
         self.menu_selected = 0
 
         # Profile creation / selection
+        self.options_menu = {
+            "Default": "DEFAULT",
+            "Purple (Tritanopia)": "TRITANOPIA",
+            "Yellow (Deuteranopia)": "DEUTERANOPIA",
+            "Yellow (Protanopia)": "PROTANOPIA",
+            "Back": None
+        }
+        self.options_keys = list(self.options_menu.keys())
+        self.options_selected = 0
+        
+        # Profile creation
         self.profile_input = ""
         self.profile_list = []
         self.profile_selected = 0
@@ -90,6 +103,8 @@ class GameManager:
             return self._update_profile_select(events)
         elif self.state == GameState.PROFILE_CREATE:
             return self._update_profile_create(events)
+        elif self.state == GameState.OPTIONS:
+            return self._update_options(events)
         elif self.state == GameState.PLAYING:
             return self._update_playing(events, dt)
         elif self.state == GameState.LEVEL_COMPLETE:
@@ -102,6 +117,24 @@ class GameManager:
             return self._update_high_scores(events)
         return True
 
+    def _update_options(self, events):
+        """Update options menu."""
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    self.options_selected = (self.options_selected - 1) % len(self.options_keys)
+                elif event.key == pygame.K_DOWN:
+                    self.options_selected = (self.options_selected + 1) % len(self.options_keys)
+                elif event.key == pygame.K_RETURN:
+                    selected_option_key = self.options_keys[self.options_selected]
+                    palette_name = self.options_menu[selected_option_key]
+                    if palette_name:
+                        color_manager.set_palette(palette_name)
+                    self.state = GameState.MENU
+                elif event.key == pygame.K_ESCAPE:
+                    self.state = GameState.MENU
+        return True
+    
     def render(self):
         """Render current game state."""
         self.renderer.clear()
@@ -121,6 +154,11 @@ class GameManager:
                 0,
             )
 
+            self.renderer.render_menu("Create Profile", [f"Name: {self.profile_input}_", "Press ENTER to confirm", "ESC to cancel"], 0)
+
+        elif self.state == GameState.OPTIONS:
+         self.renderer.render_menu("Color Options", self.options_keys, self.options_selected)
+        
         elif self.state == GameState.PLAYING:
             if self.maze and self.player:
                 offset_x, offset_y = self.renderer.get_maze_offset(self.maze)
@@ -186,7 +224,9 @@ class GameManager:
                         self._show_profile_select()
                     elif self.menu_selected == 1:  # High Scores
                         self.state = GameState.HIGH_SCORES
-                    elif self.menu_selected == 2:  # Quit
+                    elif self.menu_selected == 2:  # Options
+                        self.state = GameState.OPTIONS
+                    elif self.menu_selected == 3:  # Quit
                         return False
         return True
 
@@ -420,12 +460,12 @@ class GameManager:
 
     def _render_high_scores(self):
         """Render high scores screen."""
-        from config import COLOR_MENU_BG, COLOR_TEXT, SCREEN_WIDTH
-
-        self.screen.fill(COLOR_MENU_BG)
-
+        from config import SCREEN_WIDTH
+        
+        self.screen.fill(color_manager.get_color("COLOR_MENU_BG"))
+        
         # Title
-        title_surf = self.renderer.font_large.render("HIGH SCORES", True, COLOR_TEXT)
+        title_surf = self.renderer.font_large.render("HIGH SCORES", True, color_manager.get_color("COLOR_TEXT"))
         title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 80))
         self.screen.blit(title_surf, title_rect)
 
@@ -434,7 +474,7 @@ class GameManager:
         y_pos = 150
 
         if not scores:
-            no_scores = self.renderer.font_medium.render("No high scores yet!", True, COLOR_TEXT)
+            no_scores = self.renderer.font_medium.render("No high scores yet!", True, color_manager.get_color("COLOR_TEXT"))
             no_scores_rect = no_scores.get_rect(center=(SCREEN_WIDTH // 2, 250))
             self.screen.blit(no_scores, no_scores_rect)
         else:
@@ -445,12 +485,12 @@ class GameManager:
                 level_text = f"Level {score_data['level']}"
 
                 text = f"{rank_text:4} {name_text:15} {score_text:8} {level_text}"
-                score_surf = self.renderer.font_small.render(text, True, COLOR_TEXT)
+                score_surf = self.renderer.font_small.render(text, True, color_manager.get_color("COLOR_TEXT"))
                 score_rect = score_surf.get_rect(center=(SCREEN_WIDTH // 2, y_pos))
                 self.screen.blit(score_surf, score_rect)
                 y_pos += 35
 
         # Back instruction
-        back_surf = self.renderer.font_small.render("Press ESC to go back", True, COLOR_TEXT)
+        back_surf = self.renderer.font_small.render("Press ESC to go back", True, color_manager.get_color("COLOR_TEXT"))
         back_rect = back_surf.get_rect(center=(SCREEN_WIDTH // 2, 520))
         self.screen.blit(back_surf, back_rect)
