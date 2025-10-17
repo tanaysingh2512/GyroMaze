@@ -6,3 +6,5 @@
 .env
 profiles.json
 high_scores.json
+.DS_Store
+node_modules/
