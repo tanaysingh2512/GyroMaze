@@ -1,4 +1,4 @@
-# Maze Game
+# GyroMaze
 
 A lightweight Python maze game with 10 progressively challenging levels. Control your character using keyboard input (arrow keys or WASD) and navigate through increasingly complex mazes!
 
